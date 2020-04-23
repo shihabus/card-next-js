@@ -1,11 +1,13 @@
 import React from "react";
 import "./index.css";
 import Card from "./Card";
-import data from "../data/data.json";
+import { bindActionCreators } from "redux";
+import { initStore, initialCards, addItems } from "../store";
+import withRedux from "next-redux-wrapper";
 
 class Index extends React.Component {
-  static async getInitialProps() {
-    return { cards: data };
+  static async getInitialProps({ store }) {
+    store.dispatch(initialCards());
   }
   render() {
     return (
@@ -15,7 +17,7 @@ class Index extends React.Component {
         </header>
         <div className="Grid">
           {this.props.cards.map(card => (
-            <Card key={card.id}/>
+            <Card key={card.id} />
           ))}
         </div>
       </div>
@@ -23,4 +25,11 @@ class Index extends React.Component {
   }
 }
 
-export default Index;
+const mapStateToProps = state => ({ cards: state.cards });
+
+const mapDispatchToProps = dispatch => ({
+  initialCards: bindActionCreators(initialCards, dispatch),
+  addItems: bindActionCreators(addItems, dispatch)
+});
+
+export default withRedux(initStore, mapStateToProps, mapDispatchToProps)(Index);
